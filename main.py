@@ -75,6 +75,8 @@ async def on_message(m):
             await m.channel.send('game ended')
         else:
             await m.channel.send('Use -p @user to play the game.')
+    if m.content.startswith('-invitelink'):
+        await m.channel.send('https://discord.com/api/oauth2/authorize?client_id=831894161434083358&permissions=2148005952&scope=bot')
 
 
 
