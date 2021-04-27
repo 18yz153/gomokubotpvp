@@ -1,3 +1,4 @@
+  
 import discord
 import os
 import game
@@ -10,6 +11,10 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 
 client = discord.Client()
 
+def embedg(g,player):
+  embedVar = discord.Embed(title="The game",description=str(g), color=0x66ccff)
+  embedVar.add_field(name="Next turn", value=player.name, inline=False)
+  return embedVar
 
 @client.event
 async def on_ready():
@@ -28,31 +33,50 @@ async def on_message(m):
             await m.channel.send(p1.name + ' play with ' + p2.name)
 
             def isp1(mess):
-                return mess.author == p1
+                return mess.author == p1 and ',' in mess.content
 
             def isp2(mess):
-                return mess.author == p2
+                return mess.author == p2 and ',' in mess.content
 
             g = game.game()
-            await m.channel.send(g)
+            embedver=embedg(g,p1)
+            await m.channel.send(embed=embedver)
             turn = 1
             while (g.iscontiune()):
                 print('round')
                 if turn == 1:
                     try:
-                        pos = await client.wait_for('m', check=isp1, timeout=5)
+                        posmsg = await client.wait_for('message', check=isp1)
                     except asyncio.TimeoutError:
-                        return await m.channel.send('timeout')
-                    g.addchess('●', pos)
-                    turn = 0
+                        return await m.channel.send(p1.name +' timeout')
+                    pos=posmsg.content.split(',')
+                    try:
+                        g.addchess('● ', pos)
+                        turn = 0
+                        embedver=embedg(g,p1)
+                        await m.channel.send(embed=embedver)
+                    except:
+                        turn = 1
+                        await m.channel.send(p1.name +' put koma failed')
                 else:
                     try:
-                        pos = await client.wait_for('m', check=isp2, timeout=5)
+                        posmsg = await client.wait_for('message', check=isp2)
                     except asyncio.TimeoutError:
-                        return await m.channel.send('timeout')
-                    g.addchess('○', pos)
-                    turn = 1
-                await m.channel.send(g)
+                        return await m.channel.send(p2.name +' timeout')
+                    pos=posmsg.content.split(',')
+                    try:
+                        g.addchess('○ ', pos)
+                        turn = 1
+                        embedver=embedg(g,p2)
+                        await m.channel.send(embed=embedver)
+                    except:
+                        turn = 0
+                        await m.channel.send(p2.name +' put koma failed')
+            await m.channel.send('game ended')
+        else:
+            await m.channel.send('Use -p @user to play the game.')
+
+
 
 
 client.run(TOKEN)

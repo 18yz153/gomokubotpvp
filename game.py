@@ -1,3 +1,9 @@
+class addchessexception(Exception):
+    def __init__(self):
+      self.i=1
+
+
+
 class game():
   def __init__(self):
     self.board = [None]*15
@@ -9,6 +15,8 @@ class game():
     y=int(pos[1])-1
     if self.board[x][y]=="+ ":
       self.board[x][y]=chess
+    else:
+      raise addchessexception()
 
   def iscontiune(self):
     for i in range(len(self.board)):
